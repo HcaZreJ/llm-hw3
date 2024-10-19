@@ -132,7 +132,9 @@ class EncoderModel(nn.Module):
         Returns:
         - target: tensor of shape (n_queries)
         """
-        return torch.arange(0, n_passages, n_queries)
+        passage_per_query = n_passages // n_queries
+        labels = torch.arange(0, n_queries) * passage_per_query
+        return labels.to(torch.long)
     
     def compute_loss(self, scores, target):
         """
