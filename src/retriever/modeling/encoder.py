@@ -145,7 +145,7 @@ class EncoderModel(nn.Module):
         Returns:
         - loss: mean reduced loss.
         """
-        return F.cross_entropy(scores, target, reduction="mean")
+        return F.cross_entropy(scores, target)
 
     def gradient_checkpointing_enable(self, **kwargs):
         try:
