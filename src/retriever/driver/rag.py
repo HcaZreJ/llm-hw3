@@ -115,7 +115,18 @@ def get_rag(query_id, doc2text, query2docs, top_n, shuffle):
     Returns:
         str: white-space separeted text of top-N documents.
     """
-    raise NotImplementedError()
+    # Retrieve the docids that we want
+    docids = query2docs[query_id][:top_n]
+    
+    # Build returned documents as list first
+    docs = [doc2text[docid] for docid in docids]
+    
+    # Shuffle list if shuffle, which is inplace and returns None
+    if shuffle:
+        random.shuffle(docs)
+    
+    # Return shuffled / unshuffled version
+    return " ".join(docs)
 
 
 def apply_prompt(prefixes, trec_run, doc2text, query2docs):
@@ -182,15 +193,39 @@ def main():
         dataset = load_dataset('jmvcoelho/toy-corpus', split='train')
         
         docid_to_text = {}
-        raise NotImplementedError()
-        #TODO: parse the huggingface dataset, and populate docid_to_text, mapping the document identifier to its repective content.
+        #TODO: parse the huggingface dataset, and populate docid_to_text,
+        # mapping the document identifier to its repective content.
+        for example in dataset:
+            docid_to_text[example["docid"]] = example["text"]
 
         qid_to_topdocs = {}
 
         with open(args.augmentation_run, 'r') as h:
-            raise NotImplementedError()
-            #TODO: Read the run file, and populate qid_to_topdocs, mapping query ids to a list of top-document ids.
-
+            #TODO: Read the run file, and populate qid_to_topdocs,
+            # mapping query ids to a list of top-document ids.
+            
+            # I checked the search.py's write_ranking() function briefly
+            # and saw that it already writes passages in order of ranking,
+            # so there's no need to sort here, we just need to remember the
+            # currrent qid that we are on
+            curr_qid = None
+            
+            # Parse each line separately
+            for line in h:                
+                # Split on space
+                entries = line.split()
+                # qid is 1st entry, pid is 3rd entry
+                qid = entries[0]
+                pid = entries[2]
+                
+                # If we are still working with this query's docs
+                if curr_qid == qid:
+                    qid_to_topdocs[curr_qid].append(pid)
+                
+                # Else we moved onto a new query
+                else:
+                    curr_qid = qid
+                    qid_to_topdocs[curr_qid] = [pid]
 
     else: # this means that RAG won't be performed.
         docid_to_text = None
