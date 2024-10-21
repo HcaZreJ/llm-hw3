@@ -135,7 +135,7 @@ def apply_prompt(prefixes, trec_run, doc2text, query2docs):
 
     for prefix, query_id in prefixes:
         if trec_run is not None:
-            rag = get_rag(query_id, doc2text, query2docs, top_n=1, shuffle=False)
+            rag = get_rag(query_id, doc2text, query2docs, top_n=10, shuffle=False)
         else:
             rag = ""
         
@@ -257,7 +257,7 @@ def main():
         temperature,
     )
 
-    out_file_name = "generation_pythia.jsonl" if args.augmentation_run is None else "generation_pythia_with_RAG.jsonl"
+    out_file_name = "generation_pythia.jsonl" if args.augmentation_run is None else "generation_pythia_with_RAG_top_10.jsonl"
 
     generation_path = os.path.join(output_dir, out_file_name)
     print(f"writing generations to {generation_path}")
