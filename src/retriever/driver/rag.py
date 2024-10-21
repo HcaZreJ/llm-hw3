@@ -215,8 +215,8 @@ def main():
                 # Split on space
                 entries = line.split()
                 # qid is 1st entry, pid is 3rd entry
-                qid = entries[0]
-                pid = entries[2]
+                qid = int(entries[0])
+                pid = int(entries[2])
                 
                 # If we are still working with this query's docs
                 if curr_qid == qid:
